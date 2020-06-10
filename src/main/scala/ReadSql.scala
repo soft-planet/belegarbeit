@@ -4,9 +4,14 @@ import org.apache.spark.sql.{SparkSession, types}
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.types.{ArrayType, StringType, StructField, StructType}
-import java.sql.{Connection,DriverManager}
+import java.sql.{Connection, DriverManager}
 
-import org.apache.spark.ml.feature.{HashingTF,  Tokenizer}
+import org.apache.spark.api.java.JavaRDD
+
+import org.apache.spark.rdd.JdbcRDD
+
+import scala.reflect.ClassManifestFactory
+import org.apache.spark.rdd.JdbcRDD
 
 object ReadSql {
 
@@ -17,8 +22,6 @@ object ReadSql {
       .master("local[1]")
       .appName("Belegarbeit")
       .getOrCreate();
-
-
     val url = "jdbc:mysql://localhost/geniuscom?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
     val driver = "com.mysql.jdbc.Driver"
     val username = "root"
@@ -26,7 +29,7 @@ object ReadSql {
 
     try {
       Class.forName(driver)
-      connection = DriverManager.getConnection(url, username, password)
+
       val statement = connection.createStatement
       val rs = statement.executeQuery("SELECT content,url as docNr FROM responses LIMIT 100")
       while (rs.next) {
