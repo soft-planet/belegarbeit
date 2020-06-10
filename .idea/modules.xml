@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/belegarbeit.iml" filepath="$PROJECT_DIR$/.idea/modules/belegarbeit.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/belegarbeit-build.iml" filepath="$PROJECT_DIR$/.idea/modules/belegarbeit-build.iml" />
     </modules>
   </component>
 </project>
