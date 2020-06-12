@@ -12,12 +12,10 @@ object Pipeline {
 
 
     val detectLanguages = tokenized.map(rec=>(rec._1,rec._2,LanguageDetection.detect(rec._2)))
-    detectLanguages.foreach(x=>println(x._3+" : "+x._2.mkString(" ")))
 
     val preferredLanguages = List("DE", "ENG")
     val targetData=detectLanguages.filter(preferredLanguages contains _._3)
-    val filteredData=targetData.filter(rec=>preferredLanguages contains rec._3)
-    val cleanData=filteredData.map(rec=>(rec._1,StopwordFilter.filter(rec._2,rec._3),rec._3))
+    val cleanData=targetData.map(rec=>(rec._1,StopwordFilter.filter(rec._2,rec._3),rec._3))
 
     val stemmedData=cleanData.map(rec=>(
       rec._1,
@@ -25,7 +23,20 @@ object Pipeline {
       else rec._2.map(word=>EnglishStemmer.stem(word))
       ))
 
+
     val tf=stemmedData.map(rec=>(rec._1,Tf.tf(rec._2)))
+    println("invert")
+  
+
+    inverted.foreach(x=>{
+      println("word"+x._1)
+      x._2.foreach(y=>println(y))
+    })
     val invertedIndex=new InvertedIndex(tf.collect().toMap).saveToFile("invertedIndex.bin")
+    println("saved to File")
+    val invertedIndexFromFile=new InvertedIndex(Map.empty).loadFromFile("invertedIndex.bin")
+    println("Load File")
+    println("search")
+    invertedIndexFromFile.search("oh").foreach(x=>println(x._1+""+x._2))
   }
 }

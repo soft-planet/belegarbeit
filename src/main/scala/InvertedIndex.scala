@@ -39,4 +39,18 @@ class InvertedIndex(oldII:Map[String, Map[String,Int]]) {
       ois.close()
     }
   }
+
+  def search(query:String):Map[String,Int]={
+  val tokens=Tokenizer.tokenize(query)
+  val detectedlanguage=LanguageDetection.detect(tokens)
+  val filterdStopwords=StopwordFilter.filter(tokens,detectedlanguage)
+
+    val stemmedTokens= if(detectedlanguage=="DE")filterdStopwords.map(GermanStemmer.stem) else filterdStopwords.map(EnglishStemmer.stem)
+    stemmedTokens.foreach(println)
+    /*ii.foreach(x=>{println("word:"+x._1)
+   x._2.foreach(y=>println(y._2+" x docNr:"+y._1))
+    })*/
+    stemmedTokens.flatMap(token=>ii(token)).toMap
+
+  }
 }
