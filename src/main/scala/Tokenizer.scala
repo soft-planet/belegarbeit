@@ -11,11 +11,10 @@ import org.apache.spark.rdd.{JdbcRDD, RDD}
 import org.apache.spark.rdd.JdbcRDD
 object Tokenizer {
 
-  def tokenize(text:RDD[String]):RDD[(String)]= {
+  def tokenize(text:String): Array[String]= {
 
-    val lines = text
-    val tokens=lines.map(x=>x.split("[\\p{Punct}\\p{Blank}\\s]{1,}").map(upperToken=>upperToken.toLowerCase))
-    tokens.flatMap(x=>x)
+   val tokens=text.split("[\\p{Punct}\\p{Blank}\\s]{1,}").map(upperToken=>upperToken.toLowerCase)
+    tokens
 
   }
 }

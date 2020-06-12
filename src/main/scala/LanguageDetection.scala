@@ -3,34 +3,37 @@ import java.io.InputStream
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 
 
 
 object LanguageDetection {
 
 
-  def detect(tokens:RDD[(String)],sc: SparkContext):String={
+  def detect(tokens:Array[String]):String={
 
 
+    val topLanguages=Map(
+      "DE"->"top1000de.txt",
+      "ENG"->"google-10000-english.txt",
+      "PL"->"top1000pl.txt",
+      "ESP"->"top1000esp.txt",
+      "RU"->"top1000ru.txt",
+      "PRT"->"top1000prt.txt",
+      "GRC"->"top1000grc.txt")
+    val tokensDistinct=tokens.toSet
+    val scoring= topLanguages.map{
 
-    val fileDe = getClass.getResource("/top1000de.txt").getFile
-    val wordsDe =sc.textFile(fileDe)
-    val wordsRddDe=wordsDe.flatMap(line =>line.split("\n"))
+      t=>
+        val wordsSource=getClass.getResourceAsStream(t._2)
+        val wordsSet = scala.io.Source.fromInputStream( wordsSource )(Codec("ISO-8859-1")).getLines().toSet
+        val score=wordsSet.intersect(tokensDistinct).size
+        (t._1,score)
+
+    }++Map("UNKNOWN"->(1+tokensDistinct.size/10))
 
 
-
-    val fileEng = getClass.getResource("/google-10000-english.txt").getFile
-    val wordsEng =sc.textFile(fileEng)
-    val wordsRddEng=wordsEng.flatMap(line =>line.split("\n"))
-
-    val tokensDistinct=tokens.distinct
-
-    val intersectionDe=wordsRddDe.intersection(tokens).count()
-    val intersectionEng=wordsRddEng.intersection(tokens).count()
-    val scoring=Map("DE" -> intersectionDe,"ENG"->intersectionEng,"UNKNOWN"->1L)
-
-    scoring.maxBy { case (key:String, value:Long) => value }._1
+    scoring.maxBy { case (key:String, value:Int) => value }._1
   }
 
 }

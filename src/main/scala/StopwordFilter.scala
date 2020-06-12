@@ -2,18 +2,18 @@ import LanguageDetection.getClass
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
+import scala.io.Codec
+
 object StopwordFilter {
-def filter(dirty:RDD[(String)],lang:String,sc:SparkContext):RDD[(String)]={
+def filter(dirty:Array[(String)],lang:String):Array[(String)]={
 
-  val txtFiles=Map(
-    "DE"->"stop-words-german.txt",
-    "ENG"->"stopwords-eng.txt",
-    "UNKOWN"->"empty.txt")
+  val wordsSource=getClass.getResourceAsStream( lang match {
+    case "DE" =>"stop-words-german.txt"
+    case "ENG" =>"stopwords-eng.txt"
+    case _ =>"empty.txt"
+  })
+  val stopwords = scala.io.Source.fromInputStream( wordsSource )(Codec("ISO-8859-1")).getLines()
 
-  val file = getClass.getResource("/"+txtFiles(lang)).getFile
-  val stopwords =sc.textFile(file)
-  val stopwordsRDD=stopwords.flatMap(line =>line.split("\n"))
-
-  dirty.subtract(stopwordsRDD)
+  dirty.filterNot(stopwords contains  _)
 }
 }
