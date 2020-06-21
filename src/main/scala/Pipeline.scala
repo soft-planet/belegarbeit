@@ -24,19 +24,24 @@ object Pipeline {
       ))
 
 
-    val tf=stemmedData.map(rec=>(rec._1,Tf.tf(rec._2)))
+    val tf=stemmedData.map(rec=>(rec._1->Tf.tf(rec._2)))
     println("invert")
-  
 
-    inverted.foreach(x=>{
-      println("word"+x._1)
-      x._2.foreach(y=>println(y))
+    val invert=tf .flatMap(tuple => tuple._2.map(x => (x._1, (tuple._1, x._2)))).mapValues(Map(_)).reduceByKey(_ ++ _)
+
+    invert.foreach(x=>{println("Word:"+x._1)
+    x._2.foreach(y=>{
+      println("   "+y._2+" x "+y._1)
     })
-    val invertedIndex=new InvertedIndex(tf.collect().toMap).saveToFile("invertedIndex.bin")
+    }
+    )
+
+    val invertedIndex=new InvertedIndex(invert.collect().toMap).saveToFile("invertedIndex.bin")
     println("saved to File")
     val invertedIndexFromFile=new InvertedIndex(Map.empty).loadFromFile("invertedIndex.bin")
     println("Load File")
     println("search")
     invertedIndexFromFile.search("oh").foreach(x=>println(x._1+""+x._2))
+
   }
 }
