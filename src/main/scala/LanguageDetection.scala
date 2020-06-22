@@ -32,8 +32,10 @@ object LanguageDetection {
 
     }++Map("UNKNOWN"->(1+tokensDistinct.size/10))
 
+    val detecedLanguage= scoring.maxBy { case (key:String, value:Int) => value }._1
+ //  println(  detecedLanguage+tokensDistinct.mkString(" ") )
 
-    scoring.maxBy { case (key:String, value:Int) => value }._1
+    detecedLanguage
   }
 
 }
