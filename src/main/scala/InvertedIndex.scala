@@ -35,12 +35,10 @@ class InvertedIndex(oldII:Map[String, Map[String,Int]],documentsSize:Int) {
 
     val stemmedTokens= if(detectedlanguage=="DE")filterdStopwords.map(GermanStemmer.stem) else filterdStopwords.map(EnglishStemmer.stem)
 
-    /*ii.foreach(x=>{println("word:"+x._1)
-   x._2.foreach(y=>println(y._2+" x docNr:"+y._1))
-    })*/
+
     val tokenTF:Map[String,Map[String,Int]]=stemmedTokens .map(token=>(token,(ii(token)))).toMap
     val tokenTFDF=tokenTF.map(rec=>(rec._1,rec._2,rec._2.size))
-    val tokenTFDFCorupusSize=tokenTFDF.map(rec=>(rec._2,rec._3,this.size()))
+    val tokenTFDFCorupusSize=tokenTFDF.map(rec=>(rec._2,rec._3,size()))
     val tf_idf=tokenTFDFCorupusSize.map(rec=>(rec._1,Math.log10(rec._3.toDouble/rec._2.toDouble)))
 
 
