@@ -24,16 +24,16 @@ object CreateIndex {
       val splitted:Array[String]=line.split(";")
       if(splitted.size==2)(splitted(0),splitted(1)) else ("","")
     })
-
+    //url , content
     val tokenized = rows.map(rec => (rec._1, Tokenizer.tokenize(rec._2)))
 
-
-    val detectLanguages = tokenized.map(rec=>(rec._1,rec._2,LanguageDetection.detect(rec._2)))
+    //url , tokens , Langcode
+    val langaugesDetected = tokenized.map(rec=>(rec._1,rec._2,LanguageDetection.detect(rec._2)))
 
     val preferredLanguages = List("DE", "ENG")
-    val targetData=detectLanguages.filter(preferredLanguages contains _._3)
-    val cleanData=targetData.map(rec=>(rec._1,StopwordFilter.filter(rec._2,rec._3),rec._3))
-
+    val filteredLanguages=langaugesDetected.filter(preferredLanguages contains _._3)
+    val cleanData=filteredLanguages.map(rec=>(rec._1,StopwordFilter.filter(rec._2,rec._3),rec._3))
+    //url, stemmedTokens
     val stemmedData=cleanData.map(rec=>(
       rec._1,
       if(rec._3=="DE") rec._2.map(word=>GermanStemmer.stem(word))
