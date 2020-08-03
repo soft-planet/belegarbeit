@@ -7,15 +7,15 @@ class Minhash {
     private val maxHash =4294967295l
 
 
-    private var numPerm=0
+    private var numPerm=128
     private var seed = 1
     private var hashvalues= scala.collection.mutable.ArrayBuffer.empty[Long]
     private var permA =  scala.collection.mutable.ArrayBuffer.empty[Int]
     private var permB =  scala.collection.mutable.ArrayBuffer.empty[Int]
 
     def inithashvalues:Unit={
-      for( a <- 0 to this.numPerm){
 
+      for( a <- 0 to this.numPerm){
         this.hashvalues+=this.maxHash
       }
     }
@@ -61,7 +61,7 @@ class Minhash {
 
   def update(str:String) :Unit= {
 
-    for (i <- 0 to this.hashvalues.length -1) {
+    for (i <- 0 to this.hashvalues.length-1 ) {
 
       var a:Long = this.permA(i)
       var b:Long = this.permB(i)
