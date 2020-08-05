@@ -5,11 +5,11 @@ class Minhash {
     private val prime = 4294967311l
   //Math.pow(2, 32) - 1
     private val maxHash =4294967295l
-
-
+    var hashbands=scala.collection.mutable.ArrayBuffer.empty[Long]
+    var hashbandsStr=scala.collection.mutable.ArrayBuffer.empty[String]
     private var numPerm=128
     private var seed = 1
-    private var hashvalues= scala.collection.mutable.ArrayBuffer.empty[Long]
+     var hashvalues= scala.collection.mutable.ArrayBuffer.empty[Long]
     private var permA =  scala.collection.mutable.ArrayBuffer.empty[Int]
     private var permB =  scala.collection.mutable.ArrayBuffer.empty[Int]
 
@@ -61,7 +61,7 @@ class Minhash {
 
   def update(str:String) :Unit= {
 
-    for (i <- 0 to this.hashvalues.length-1 ) {
+    for (i <- 0 until this.hashvalues.length ) {
 
       var a:Long = this.permA(i)
       var b:Long = this.permB(i)
@@ -82,7 +82,7 @@ class Minhash {
     }
     var shared = 0
 
-      for (i <- 0 to this.hashvalues.length-1) {
+      for (i <- 0 until this.hashvalues.length) {
 
    if( this.hashvalues(i) == other.hashvalues(i))
      shared=shared+1

@@ -1,14 +1,14 @@
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
-class Lsh {
+class LshIndex {
 private  val bandSize = 4
 private  var index = new HashMap[String, ArrayBuffer[String]]
   def insert(key:String,minhash:Minhash):Unit={
     var hashbands = this.getHashbands(minhash)
-    for (i <- 0 to  hashbands.length) {
+    for (i <- 0  until  hashbands.length) {
       var band = hashbands(i)
 
-      if (index.exists(_!=band)) {
+      if (!index.contains(band)) {
         index(band)=ArrayBuffer[String](key)
       } else {
         index(band)+=key
@@ -17,12 +17,12 @@ private  var index = new HashMap[String, ArrayBuffer[String]]
   }
 
 
-  def query (minhash:Minhash):ArrayBuffer[String]= {
-    var matches = ArrayBuffer.empty[String]
+  def query (minhash:Minhash):Set[String]= {
+    var matches = Set.empty[String]
     var hashbands = this.getHashbands(minhash)
-    for ( i <- 0 to hashbands.length) {
+    for ( i <- 0 until hashbands.length) {
       var band = hashbands(i)
-      for ( j <- 0 to index(band).length) {
+      for ( j <- 0  until index(band).length) {
         matches+=index(band)(j)
       }
     }
@@ -46,7 +46,7 @@ private  var index = new HashMap[String, ArrayBuffer[String]]
 
 
 }
-object Lsh{
+object LshIndex{
   def main(args: Array[String]): Unit = {
 
     var s1:Array[String] = Array("minhash", "is", "a", "probabilistic", "data", "structure", "for",
@@ -66,13 +66,13 @@ object Lsh{
 
 
     // add each document to a Locality Sensitive Hashing index
-    var index = new LshIndex();
-    index.insert('m1', m1);
-    index.insert('m2', m2);
-    index.insert('m3', m3);
+    var index = new LshIndex()
+    index.insert("m1", m1)
+    index.insert("m2", m2)
+    index.insert("m3", m3)
 
     // query for documents that appear similar to a query document
     var matches = index.query(m1);
-    console.log('Jaccard similarity >= 0.5 to m1:', matches);
+    matches.foreach(w=>println(w))
   }
   }
